@@ -1,0 +1,358 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This is the LaTeX template file for lecture notes for NWU CS496.
+% Attribution: Modified from Berkeley EECS CS 294-8.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass{article}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Package declaration
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{color}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{mathtools}
+\usepackage{amsthm} % theorems, Aside: Why is it important for us to have $T$ types?  s, ...
+\usepackage{amsmath,amsfonts,amssymb,graphicx}
+\usepackage{subfigure}
+\usepackage{tikz}
+\usepackage{filecontents} % Inline bibliographies
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Settings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0 in}
+\setlength{\parskip}{0.1 in}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Commands
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% The following commands are used to generate the header.
+%
+\newcounter{lecnum}
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf CS 496 Approximation Algorithms
+                        \hfill Winter 2021} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribe: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+   {\bf Disclaimer}: {\it These notes have not been subjected to the
+   usual scrutiny reserved for formal publications.  They may be distributed
+   outside this class only with the permission of the Instructor.}
+   \vspace*{4mm}
+}
+
+
+% Use these for theorems, lemmas, proofs, etc.
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{remark}{Remark}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{example}[theorem]{Example}
+
+% argmin and argmax
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+% Distances
+\newcommand{\totalvardist}[2]{{\operatorname{d_{\rm TV}}\!\left({#1, #2}\right)}}
+\newcommand{\hamming}[2]{{\operatorname{d}\!\left(#1, #2\right)}}
+\newcommand{\editdist}[2]{{\operatorname{d}\!\left(#1, #2\right)}}
+\newcommand{\dist}[2]{{\operatorname{dist}\!\left(#1, #2\right)}}
+
+% Norms
+\newcommand{\norm}[1]{\lVert#1{\rVert}}
+\newcommand{\normone}[1]{{\norm{#1}}_1}
+\newcommand{\normtwo}[1]{{\norm{#1}}_2}
+\newcommand{\norminf}[1]{{\norm{#1}}_\infty}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
+
+% Sets and indicators
+\newcommand{\setOfSuchThat}[2]{ \left\{\; #1 \;\colon\; #2\; \right\} } 			% sets such as "{ elems | condition }"
+
+% Probability
+\newcommand{\proba}{\operatorname{\mathbb{P}}}
+\newcommand{\probaOf}[1]{\Pr\!\left[\, #1\, \right]}
+\newcommand{\probaCond}[2]{\Pr\!\left[\, #1 \;\middle\vert\; #2\, \right]}
+\newcommand{\probaDistrOf}[2]{\Pr_{#1}\left[\, #2\, \right]}
+
+% Expectation & variance
+\newcommand{\expect}[1]{\mathbb{E}\!\left[#1\right]}
+\newcommand{\expectCond}[2]{\mathbb{E}\!\left[\, #1 \;\middle\vert\; #2\, \right]}
+\newcommand{\expectOn}[2]{\mathbb{E}_#1\!\left[#2\right]}
+\newcommand{\expectCondOn}[3]{\mathbb{E}_#1\!\left[\, #2 \;\middle\vert\; #3\, \right]}
+\newcommand{\shortexpect}{\mathbb{E}}
+\newcommand{\var}{\operatorname{Var}}
+\newcommand{\uniform}{\ensuremath{\mathcal{U}}}
+
+% Complexity
+\newcommand{\littleO}[1]{{o\!\left({#1}\right)}}
+\newcommand{\bigO}[1]{{O\!\left({#1}\right)}}
+\newcommand{\bigTheta}[1]{{\Theta\!\left({#1}\right)}}
+\newcommand{\bigOmega}[1]{{\Omega\!\left({#1}\right)}}
+\newcommand{\tildeO}[1]{\tilde{O}\!\left({#1}\right)}
+\newcommand{\tildeTheta}[1]{\operatorname{\tilde{\Theta}}\!\left({#1}\right)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Note header
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{2}{January 21, 26 - Bin Packing}{Konstantin Makarychev}{Sheng Long}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Note section
+
+%  Important hint: be concise while describing, if something is too 
+%  complex, use figures and graphs. However, while proving / using math
+%  equations, include all necessary details, such as what inequality is
+%  used, etc.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Problem Set-up}
+
+We are partitioning items into bins in a way so that our solution \textit{minimizes} the total number of bins we use. ``Partition'' implies that all items are either in one bin or another - we cannot split the item and put it into 2 different bins. 
+
+We have items $1, \ldots, n$. Each item has weight $w_i: w_1, \ldots, w_n$. 
+
+The capacity of all bins is the same, and we define it as $W$. Assume $w_i \geq W \,\,\, \forall i$. Very often we also assume that $W = 1$ (if not, we can easily scale the weights so that $W=1$). 
+
+\section{Algorithms for bin-packing}
+
+\subsection*{Best Fit Algorithm}
+\begin{itemize}
+	\item Put each item into the bin where it has the \textit{tightest} fit; that is, after we've put the item in, the space left in the bin is smallest 
+\end{itemize}
+
+\subsection*{First Fit Algorithm}
+\begin{itemize}
+	\item For each item, put it in the \textit{first} bin that has space left 
+	\item If there is no such bin, open a new bin
+\end{itemize}
+
+\bigskip
+
+\begin{claim}
+Naive first-fit algorithm gives 2-approximation. 
+\end{claim}
+
+\begin{proof}
+Suppose we have a solution for partitioning $n$ items into $k$ bins, given by the first-fit algorithm $ALG$. 
+
+Define $c_i$ to be the amount of weight used in bin $i$. We want to know how full/empty each bin for the solution. Is it possible that there exists two bins $i, j$, such that $c_i + c_j \leq W$? That is, can we combine items in two bins and put them in one bin? 
+
+\textit{No}. By the definition of the first fit algorithm, if $c_i + c_j \leq W$, we wouldn't need to open bin $j$ to begin with. 
+
+Therefore, the contradiction, $c_i + c_j > W, \,\, \forall i, j$ must be true. 
+
+This further tells us that for all but maybe the last bin in the end, $c_i > W/2$. 
+
+Recall that our solution gives $k$ bins. Summing $c_i > W/2$ over all $k-1$ bins, we get $(k-1)\cdot \frac{W}{2}$. Since we are not adding the weights in the last bin, we must have 
+\begin{flalign}
+\sum_i w_i > (k-1)\cdot \frac{W}{2}
+\end{flalign}
+
+The optimal solution for the bin-packing problem, denoted by $OPT$, must satisfy the following inequality:
+\begin{flalign} 
+OPT \geq \frac{\sum_i w_i}{W}
+\end{flalign}
+
+This is because any feasible solution, including the optimal solution itself, must be greater than or equal to total weight divided by bin capacity ($\frac{\sum_i w_i}{W}$). 
+
+Substitute (1) into (2): 
+\begin{flalign}
+OPT \geq \frac{\sum_i w_i}{W} > \frac{(k-1)\cdot W/2}{W} = \frac{k-1}{2}\\
+ALG \leq 2OPT 
+\end{flalign}
+\end{proof}
+
+A common technique for getting a good PTAS approximation is through discretizing the paramter and dynamic programming. We'll illustrate this by first going over two special cases. 
+
+\section{PTAS}
+
+\begin{claim}
+The Bin-Packing problem has a PTAS (Polynomial Time Approximation Scheme). 
+\end{claim}
+That is, we want to show the following guarantee: 
+\[
+	ALG(I) \leq (1+\epsilon)\cdot OPT(I) + 1
+\]
+
+Before we introduce the PTAS, we first go over two special cases of Bin-Packing. 
+
+\subsection{Case 1: Fixed number of types}
+
+Suppose that we have $T$ types of items.\footnote{
+	Aside: Why is it important for us to have $T$ types?  
+
+	\begin{enumerate}
+		\item The number of ways to pack one bin is now polynomially bounded 
+		\item The original problem, where every item is its own type, will give us $2^n$ different cells in the DP table - this is too expensive
+	\end{enumerate}
+} \\
+Items of the same type have the same weight, and we view them as interchangeable. 
+
+We formulate the following dynamic program: 
+
+minimal number of bins required to pack $a_1$ items of the type 1, $a_2$ items of type 2, ..., $a_T$ items of type $T$. 
+
+We denote the above DP by $MinBins(a_1, \ldots, a_T)$. 
+
+A certain configuration vector $(b_1, \ldots, b_T)$ is \textit{feasible} if we can pack $b_1$ items of the type 1, $b_2$ items of type 2, ..., $b_T$ items of type $T$ into \textit{one bin}. That is, 
+\[
+	b_1 w_1 + b_2 w_2 + \ldots + b_T w_T \leq W
+\]
+
+We want to minimize the number of configurations. ?? 
+
+The recurrence relationship in the above DP is 
+\[
+	MinBins(a_1, \ldots, a_T) = \min_{\substack{(b_1, \ldots, b_T) \subset feasible\\b_1 \leq a_1, b_2 \leq a_2, \ldots, b_T \leq a_T}} 1 + MinBins(a_1 - b_1, \ldots, a_T - b_T)
+\]
+That is, we're going through all feasible ways to pack \textit{one bin}; everything else is packed recursively. 
+
+Thus, we have shown that we can deterministically find an optimal solution if the number of types if fixed for all items. 
+
+\subsection{Case 2: All items are small}
+
+Suppose all items have size at most $\epsilon\cdot W$, where $\epsilon$ is some small positive constant. That is, $w_i \leq \epsilon W, \,\, \forall i$ \\
+Assume that $W=1$ in this case. \\ 
+We use the first-fit algorithm (the approximation factor will be better). \\ 
+Note that this case is really similar to when we have divisible items -- we can pack all bins to their almost full extent. 
+
+As in the previous analysis, we consider how full the first bin is when we're adding a second bin. \\The space left in the first bin must be smaller than $\epsilon W$, since if it is greater than or equal to $\epsilon W$, then we can put any item into the first bin and would not need to add a second bin. 
+\begin{flalign}
+W-c_1 < \epsilon W \\ 
+c_1 > (1-\epsilon )W
+\end{flalign}
+
+Let $k$ denote the number of bins in the solution given by the first-fit algorithm $ALG$. The above logic holds true for all other bins, except for maybe the last one, i.e. 
+\begin{flalign}
+c_i > (1-\epsilon )W \,\, \forall i \in [1, k-1]
+\end{flalign}
+
+Therefore, we have 
+\begin{flalign}
+\sum_i w_i \geq \sum_i c_i > (1-\epsilon)W\cdot (k-1)
+\end{flalign}
+
+The cost of the optimal solution: 
+\begin{flalign}
+OPT \geq \frac{\sum_i w_i}{W} > \frac{(1-\epsilon)W\cdot (k-1)}{W} = (1-\epsilon)(k-1) \\ 
+ALG = k < \underbrace{\frac{1}{1-\epsilon}}_{\approx 1+\epsilon}\cdot OPT + 1
+\end{flalign}
+
+Combining the first case (fixed number of types) and the second case (all items are small) will give us the PTAS algorithm:  
+
+\subsection{PTAS Algorithm for Bin-packing}
+\begin{enumerate}
+	\item Divide items into two types, $T = {small, large}$
+	\begin{enumerate}
+		\item Small items are of weight $\leq \epsilon W$
+		\item Large items are of weight $\geq \epsilon W$ \\ 
+		We split items of weight $=\epsilon W$ equally into small and large types 
+	\end{enumerate}
+	\item Put large items into bins (DP with some weight rounding technique)
+	\item Put small items into bins using First-Fit Algorithm\\
+	(Best fit also works, but we use first-fit for completeness)
+\end{enumerate}
+
+\begin{proof}
+	
+	We first analyze the case for \textit{small items}. 
+
+	When we're creating an extra bin for small items, this means that no existing bin has enough space for items of weight $\leq \epsilon W$. This implies that the existing bins are at least $(1-\epsilon) W$ full (except maybe for the last bin). 
+
+	This is similar to the second special case, where we only have small items. Recall that we got asymptotic approximation for that case: 
+	\[
+		ALG \leq (1+\epsilon) OPT + 1
+	\] 
+
+	Now, if we can choose a good strategy for partitioning large items, such that when run on large items only, $ALG (large) \leq (1+\epsilon) OPT (large)$, then we have shown that the algorithm is PTAS. 
+
+	We now analyze \textit{large items}. The plan is to \textit{round weights} to $T$ types, then run DP as before. 
+
+	% Recall that for the knapsack problem, we rounded values instead of weights. 
+
+	We can't round weights down, because the solution for the problem with rounded down weights might not be feasible for the original problem. For example, suppose we have two items of weights 0.51 and 0.51. If we round their weights down to 0.5, and given bin size 1, the optimal solution is to use one bin. However, the optimal solution for the original problem would be to use two bins.  
+
+	The minimum weight that we have for large items is $\epsilon W$ by definition. We don't know what the maximum weight for large items would be, but we can write it as $W$. 
+
+	Use $n$ to denote the number of large items. Suppose we choose a sufficiently large $T$. $T$ is a large constant that depends on $\epsilon$ (essentially, the smaller $\epsilon$ is, the larger $T$ is). For simplicity, assume that $n = T \times m$ (makes our analysis simpler; not a crucial constraint).   
+
+	Assume the items are now sorted by weight, from small to large. We assign the first group of $m$ items to type 1, the second group of $m$ items to type 2, etc. We'll eventually get $T$ groups, each group has $m$ items. 
+
+	For every group, we'll round items in that group to the \textit{lightest item} in that group. For some items, their weights might not decrease much but for some other items, their weights might get rounded down a lot -- we don't know for sure.
+
+	The optimal solution for this rounded down instance, denoted by $OPT'$, is at most $OPT$. This is because weights got decreased over all -- the original solution would still be feasible for the new instance, and we could maybe even improve. 
+
+	Note that we can solve this new instance using dynamic programming, as long as $T$ is a large constant. That is, $ALG' = OPT'$. However, $OPT'$ is the solution for rounded down items -- it might not be feasible for the original instance. 
+
+	For each group, we have $m$ items of the same type - we can think of this as all items being packed into bins of the same size. Therefore, given the current solution for rounded down weights, if we use bins of a larger size, then the solution will be still feasible for the original instance. 
+
+	We use bin size at the ``boundary'' between groups. That is, we use the minimal weight in the second group to pack items in the first group; minimal weight in the third group to pack items in the second group, etc. What's still missing? The last group -- we have no boundary weight for this group. Solution? We pack every item in the last group into its own bin of size $W$.
+
+	To conclude: \\
+	$OPT$: optimal solution for original weights \\ 
+	$OPT'$: optimal solution for rounded down weights \\
+	$ALG'$: solution to bin-packing (with rounded down weights) with fixed number of types using DP \\
+	$ALG$: $ALG'$ but using ``rounded-up'' bin size  
+
+	The only difference between $ALG$ and $ALG'$ is that $ALG$ packs every item in the last group (of size $m$) into its own bin, so we have 
+	\begin{flalign}
+		ALG \leq ALG' + m \\ 
+		= OPT' + m \leq OPT + n/T
+	\end{flalign}
+
+	Our goal is to show that $n/T$ is small, which will tell us how to choose $T$. 
+
+	We want to express $n$ in terms of the cost of the optimal solution, $OPT$. 
+	\begin{flalign}
+		OPT \geq \epsilon W \cdot n \\ 
+		n \leq \frac{OPT}{\epsilon W}
+	\end{flalign}
+
+	Substitute (14) into (12) and we get 
+	\begin{flalign}
+		ALG \leq OPT + n/T \leq OPT + \frac{OPT}{\epsilon W \cdot T}
+	\end{flalign}
+
+	Thus, we choose $T$ so that $\frac{OPT}{\epsilon W \cdot T}$ is small enough. Since $W=1$, we want $$\epsilon \cdot T \geq \frac{1}{\epsilon} \implies T \geq \frac{1}{\epsilon^2}$$
+\end{proof}
+
+
+
+\end{document}
